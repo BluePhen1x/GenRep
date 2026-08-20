@@ -1,5 +1,6 @@
  # Global LLM configuration
 [llm]
+api_type = "openai"                                                   # Required for Google Gemini via OpenAI-compatible endpoint
 model = "gemini-2.0-flash"                                              # The LLM model to use
 base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"   # API endpoint URL
 api_key = "YOUR_API_KEY"                                                # Your API key
@@ -9,6 +10,7 @@ max_tokens = 8096                                                       # Maximu
 
 # Optional configuration for specific LLM models for Google
 [llm.vision]
+api_type = "openai"                                                  # Required for Google Gemini via OpenAI-compatible endpoint
 model = "gemini-2.0-flash-exp"                                      # The vision model to use
 base_url = "https://generativelanguage.googleapis.com/v1beta/openai/"  # API endpoint URL for vision model
 api_key = "YOUR_API_KEY"                                               # Your API key for vision model

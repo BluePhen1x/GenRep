@@ -123,6 +123,16 @@ async def openmanus_status():
     return wrapper.get_status()
 
 
+@app.get("/api/config")
+async def get_public_config():
+    """Return public config needed by the frontend (no secrets)."""
+    return {
+        "supabase_url": config.SUPABASE_URL,
+        "supabase_anon_key": config.SUPABASE_ANON_KEY,
+        "gumroad_checkout_url": config.GUMROAD_CHECKOUT_URL,
+    }
+
+
 # ---------------------------------------------------------------------------
 # Routes - Report Generation (with tier enforcement)
 # ---------------------------------------------------------------------------

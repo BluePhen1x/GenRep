@@ -1148,6 +1148,17 @@
         };
 
         // ============================================================
+        // SITE CONFIG (fetched from backend)
+        // ============================================================
+        let siteConfig = { gumroad_checkout_url: '#' };
+        async function loadSiteConfig() {
+            try {
+                const r = await fetch('/api/config');
+                if (r.ok) siteConfig = await r.json();
+            } catch (_) { /* use defaults */ }
+        }
+
+        // ============================================================
         // GENERATE STATE
         // ============================================================
         let currentJobId = null;
@@ -1282,7 +1293,7 @@
             if (authState.tier === 'free') {
                 freeBtn.textContent = 'Current Plan';
                 freeBtn.className = 'cta cta-current';
-                proBtn.href = 'https://gumroad.com/checkout?product_id=YOUR_PRODUCT_ID';
+                proBtn.href = siteConfig.gumroad_checkout_url || '#';
             } else if (authState.tier === 'pro') {
                 freeBtn.textContent = 'Downgrade';
                 freeBtn.className = 'cta cta-current';
@@ -1293,7 +1304,7 @@
                 freeBtn.textContent = 'Sign Up Free';
                 freeBtn.className = 'cta cta-outline';
                 freeBtn.onclick = () => navigateTo('signup');
-                proBtn.href = 'https://gumroad.com/checkout?product_id=YOUR_PRODUCT_ID';
+                proBtn.href = siteConfig.gumroad_checkout_url || '#';
             }
         }
 
@@ -1470,6 +1481,7 @@
         // INIT
         // ============================================================
         document.addEventListener('DOMContentLoaded', async () => {
+            await loadSiteConfig();
             await refreshSession();
             handleRoute();
             checkStatus();
