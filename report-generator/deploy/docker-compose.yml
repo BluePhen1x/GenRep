@@ -1,0 +1,69 @@
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7-alpine
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+
+  celery_worker:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: celery -A backend.celery_app worker --loglevel=info --concurrency=4
+    depends_on:
+      redis:
+        condition: service_healthy
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - OPENMANUS_PATH=/app/OpenManus
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL}
+      - MODEL_NAME=${MODEL_NAME}
+    volumes:
+      - ../backend:/app/backend
+      - ../OpenManus:/app/OpenManus
+      - temp_reports:/app/temp_reports
+    restart: unless-stopped
+
+  web:
+    build:
+      context: ..
+      dockerfile: deploy/Dockerfile
+    command: uvicorn backend.main:app --host 0.0.0.0 --port 8000 --workers 2
+    ports:
+      - "8000:8000"
+    depends_on:
+      redis:
+        condition: service_healthy
+      celery_worker:
+        condition: service_started
+    environment:
+      - REDIS_URL=redis://redis:6379/0
+      - OPENMANUS_PATH=/app/OpenManus
+      - OPENROUTER_API_KEY=${OPENROUTER_API_KEY}
+      - OPENROUTER_BASE_URL=${OPENROUTER_BASE_URL}
+      - MODEL_NAME=${MODEL_NAME}
+    volumes:
+      - ../backend:/app/backend
+      - ../frontend:/app/frontend
+      - ../OpenManus:/app/OpenManus
+      - temp_reports:/app/temp_reports
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis_data:
+  temp_reports:

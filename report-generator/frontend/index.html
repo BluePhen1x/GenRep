@@ -1,0 +1,1765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>GenRep</title>
+    <style>
+        /* ===== RESET ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', sans-serif;
+            background: #f7f7f8;
+            height: 100vh;
+            display: flex;
+            overflow: hidden;
+            color: #1d1d1f;
+        }
+
+        /* ===== SIDEBAR (Dark) ===== */
+        .sidebar {
+            width: 260px;
+            background: #1e1e2e;
+            color: #cdd0d6;
+            display: flex;
+            flex-direction: column;
+            padding: 20px 16px;
+            flex-shrink: 0;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar .logo {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .sidebar .logo span {
+            font-weight: 300;
+            color: #8888a0;
+            font-size: 0.9rem;
+        }
+
+        /* ===== AUTH SECTION (Sidebar) ===== */
+        .auth-section {
+            padding: 10px 0;
+            border-bottom: 1px solid #2a2a3e;
+            margin-bottom: 12px;
+        }
+
+        .auth-section .tier-badge {
+            display: inline-block;
+            padding: 3px 10px;
+            border-radius: 12px;
+            font-size: 0.65rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+        }
+
+        .tier-badge.anonymous { background: #3a3a5a; color: #a0a0c0; }
+        .tier-badge.free { background: #1a4a3a; color: #6fdf9f; }
+        .tier-badge.pro { background: #4a3a1a; color: #dfbf6f; }
+
+        .auth-section .auth-email {
+            font-size: 0.75rem;
+            color: #8888a0;
+            display: block;
+            margin-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        .auth-section .auth-link {
+            color: #667eea;
+            text-decoration: none;
+            font-size: 0.75rem;
+            cursor: pointer;
+        }
+
+        .auth-section .auth-link:hover {
+            color: #8899ff;
+        }
+
+        .auth-section .signout-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 0.7rem;
+            cursor: pointer;
+            padding: 4px 0;
+            margin-top: 4px;
+        }
+
+        .auth-section .signout-btn:hover {
+            color: #ff6b6b;
+        }
+
+        .sidebar .section-title {
+            font-size: 0.7rem;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #8888a0;
+            margin: 16px 0 8px 0;
+        }
+
+        .sidebar .history-list {
+            flex: 1;
+            overflow-y: auto;
+        }
+
+        .sidebar .history-item {
+            padding: 10px 12px;
+            border-radius: 10px;
+            margin-bottom: 4px;
+            cursor: pointer;
+            transition: background 0.2s;
+            font-size: 0.85rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border: 1px solid transparent;
+        }
+
+        .sidebar .history-item:hover {
+            background: #2a2a3e;
+        }
+
+        .sidebar .history-item.active {
+            background: #2a2a3e;
+            border-color: #4a4a6a;
+        }
+
+        .sidebar .history-item .prompt-preview {
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 140px;
+        }
+
+        .sidebar .history-item .status-badge {
+            font-size: 0.6rem;
+            padding: 2px 8px;
+            border-radius: 12px;
+            background: #3a3a5a;
+            color: #a0a0c0;
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        .sidebar .history-item .status-badge.complete {
+            background: #2a6a3a;
+            color: #8fdf9f;
+        }
+
+        .sidebar .history-item .status-badge.failed {
+            background: #6a2a2a;
+            color: #df8f8f;
+        }
+
+        .sidebar .history-item .dl-btn {
+            background: none;
+            border: none;
+            color: #8888a0;
+            cursor: pointer;
+            font-size: 0.8rem;
+            padding: 0 4px;
+            transition: color 0.2s;
+        }
+
+        .sidebar .history-item .dl-btn:hover {
+            color: #ffffff;
+        }
+
+        .sidebar .clear-btn {
+            background: none;
+            border: none;
+            color: #666;
+            font-size: 0.7rem;
+            cursor: pointer;
+            padding: 8px 0;
+            text-align: left;
+            transition: color 0.2s;
+        }
+
+        .sidebar .clear-btn:hover {
+            color: #ff6b6b;
+        }
+
+        .sidebar .footer {
+            font-size: 0.7rem;
+            color: #555;
+            margin-top: 16px;
+            border-top: 1px solid #2a2a3e;
+            padding-top: 12px;
+            text-align: center;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+        .main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            height: 100vh;
+            background: #f7f7f8;
+        }
+
+        .main-header {
+            padding: 20px 32px 0 32px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #e5e5ea;
+            padding-bottom: 12px;
+            flex-shrink: 0;
+        }
+
+        .main-header .title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1d1d1f;
+        }
+
+        .main-header .status {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 0.75rem;
+            color: #86868b;
+        }
+
+        .main-header .status .dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #34c759;
+            display: inline-block;
+        }
+
+        .main-header .status .dot.error {
+            background: #ff3b30;
+        }
+
+        /* ===== CHAT/INPUT AREA ===== */
+        .chat-area {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 20px 40px;
+            overflow-y: auto;
+        }
+
+        .chat-area .welcome {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .chat-area .welcome h2 {
+            font-size: 1.6rem;
+            font-weight: 500;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+
+        .chat-area .welcome p {
+            color: #86868b;
+            font-size: 0.95rem;
+        }
+
+        .chat-area .input-container {
+            width: 100%;
+            max-width: 680px;
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04), 0 8px 32px rgba(0, 0, 0, 0.02);
+            border: 1px solid #e5e5ea;
+            transition: border-color 0.25s, box-shadow 0.25s;
+        }
+
+        .chat-area .input-container:focus-within {
+            border-color: #1d1d1f;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06), 0 12px 40px rgba(0, 0, 0, 0.04);
+        }
+
+        .chat-area .input-container textarea {
+            width: 100%;
+            padding: 16px 20px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-family: inherit;
+            resize: vertical;
+            min-height: 80px;
+            background: transparent;
+            color: #1d1d1f;
+            line-height: 1.6;
+            outline: none;
+        }
+
+        .chat-area .input-container textarea::placeholder {
+            color: #aeaeb2;
+        }
+
+        .chat-area .quick-actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            padding: 0 16px 12px 16px;
+            justify-content: center;
+        }
+
+        .chat-area .quick-actions .chip {
+            background: #f5f5f7;
+            border: 1px solid #e5e5ea;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 500;
+            color: #1d1d1f;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            display: inline-flex;
+            align-items: center;
+            gap: 4px;
+        }
+
+        .chat-area .quick-actions .chip:hover {
+            background: #e5e5ea;
+            border-color: #c7c7cc;
+        }
+
+        .chat-area .generate-btn {
+            width: 100%;
+            max-width: 680px;
+            margin-top: 12px;
+            padding: 14px;
+            border: none;
+            border-radius: 16px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: #1d1d1f;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+        }
+
+        .chat-area .generate-btn:hover:not(:disabled) {
+            background: #000000;
+            transform: scale(1.01);
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+        }
+
+        .chat-area .generate-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* ===== TIER INFO BAR ===== */
+        .tier-info-bar {
+            width: 100%;
+            max-width: 680px;
+            margin-bottom: 12px;
+            padding: 10px 16px;
+            background: #f5f5f7;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            color: #86868b;
+            text-align: center;
+            display: none;
+        }
+
+        .tier-info-bar.visible { display: block; }
+        .tier-info-bar .upgrade-link {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        /* ===== STATUS DISPLAY ===== */
+        .status-display {
+            width: 100%;
+            max-width: 680px;
+            margin-top: 16px;
+            display: none;
+        }
+
+        .status-display.visible {
+            display: block;
+        }
+
+        .status-display .status-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.85rem;
+            color: #1d1d1f;
+            padding: 8px 0;
+        }
+
+        .status-display .status-bar .message {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .status-display .status-bar .steps {
+            display: flex;
+            gap: 12px;
+            font-size: 0.75rem;
+            color: #86868b;
+        }
+
+        .status-display .status-bar .steps .step {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            transition: color 0.3s;
+        }
+
+        .status-display .status-bar .steps .step.active {
+            color: #1d1d1f;
+            font-weight: 500;
+        }
+
+        .status-display .status-bar .steps .step.done {
+            color: #34c759;
+        }
+
+        .status-display .progress-track {
+            width: 100%;
+            height: 3px;
+            background: #e5e5ea;
+            border-radius: 10px;
+            margin-top: 6px;
+            overflow: hidden;
+        }
+
+        .status-display .progress-track .fill {
+            height: 100%;
+            background: #1d1d1f;
+            border-radius: 10px;
+            transition: width 0.6s ease;
+            width: 0%;
+        }
+
+        .status-display .progress-label {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.7rem;
+            color: #aeaeb2;
+            margin-top: 4px;
+        }
+
+        /* ===== DOWNLOAD SECTION ===== */
+        .download-area {
+            width: 100%;
+            max-width: 680px;
+            margin-top: 16px;
+            background: #f0fdf4;
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            display: none;
+            border: 1px solid #86efac;
+        }
+
+        .download-area.visible {
+            display: block;
+        }
+
+        .download-area .icon {
+            font-size: 2rem;
+        }
+
+        .download-area .title {
+            font-weight: 600;
+            color: #1d1d1f;
+            margin: 4px 0 2px 0;
+        }
+
+        .download-area .sub {
+            font-size: 0.85rem;
+            color: #86868b;
+            margin-bottom: 12px;
+        }
+
+        .download-area .btn-download {
+            padding: 12px 40px;
+            border: none;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: #1d1d1f;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.25s;
+            font-family: inherit;
+        }
+
+        .download-area .btn-download:hover {
+            background: #000000;
+            transform: scale(1.02);
+        }
+
+        /* ===== ERROR ===== */
+        .error-area {
+            width: 100%;
+            max-width: 680px;
+            margin-top: 12px;
+            padding: 12px 16px;
+            background: #fef2f2;
+            border-radius: 12px;
+            color: #991b1b;
+            font-size: 0.85rem;
+            text-align: center;
+            display: none;
+            border: 1px solid #fca5a5;
+        }
+
+        .error-area.visible {
+            display: block;
+        }
+
+        /* ===== AUTH PAGES (Shared) ===== */
+        .auth-page {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+            overflow-y: auto;
+        }
+
+        .auth-card {
+            width: 100%;
+            max-width: 400px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e5e5ea;
+        }
+
+        .auth-card h2 {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+
+        .auth-card .subtitle {
+            font-size: 0.85rem;
+            color: #86868b;
+            margin-bottom: 24px;
+        }
+
+        .auth-card input[type="email"],
+        .auth-card input[type="password"] {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-family: inherit;
+            margin-bottom: 12px;
+            outline: none;
+            transition: border-color 0.2s;
+        }
+
+        .auth-card input:focus {
+            border-color: #1d1d1f;
+        }
+
+        .auth-card .btn-primary {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: #1d1d1f;
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            margin-bottom: 8px;
+        }
+
+        .auth-card .btn-primary:hover {
+            background: #000000;
+        }
+
+        .auth-card .btn-secondary {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e5e5ea;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            font-weight: 500;
+            background: #ffffff;
+            color: #1d1d1f;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+        }
+
+        .auth-card .btn-secondary:hover {
+            background: #f5f5f7;
+        }
+
+        .auth-card .divider {
+            text-align: center;
+            color: #aeaeb2;
+            font-size: 0.8rem;
+            margin: 12px 0;
+        }
+
+        .auth-card .auth-error {
+            color: #991b1b;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 8px;
+            min-height: 1.2em;
+        }
+
+        .auth-card .auth-link {
+            text-align: center;
+            margin-top: 16px;
+            font-size: 0.85rem;
+            color: #86868b;
+        }
+
+        .auth-card .auth-link a {
+            color: #667eea;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .auth-card .auth-link a:hover {
+            color: #8899ff;
+        }
+
+        .auth-card .success-msg {
+            color: #166534;
+            font-size: 0.8rem;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        /* ===== PRICING PAGE ===== */
+        .pricing-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 24px;
+            max-width: 680px;
+            width: 100%;
+        }
+
+        .pricing-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 28px;
+            border: 1px solid #e5e5ea;
+            text-align: center;
+            transition: box-shadow 0.2s;
+        }
+
+        .pricing-card:hover {
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+        }
+
+        .pricing-card.featured {
+            border-color: #667eea;
+            box-shadow: 0 4px 20px rgba(102, 126, 234, 0.15);
+        }
+
+        .pricing-card .tier-name {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 4px;
+        }
+
+        .pricing-card .price {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: #1d1d1f;
+            margin: 12px 0;
+        }
+
+        .pricing-card .price span {
+            font-size: 0.9rem;
+            font-weight: 400;
+            color: #86868b;
+        }
+
+        .pricing-card .features {
+            list-style: none;
+            text-align: left;
+            margin: 16px 0;
+        }
+
+        .pricing-card .features li {
+            padding: 6px 0;
+            font-size: 0.85rem;
+            color: #333;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .pricing-card .features li::before {
+            content: "\2713";
+            color: #34c759;
+            font-weight: 700;
+        }
+
+        .pricing-card .cta {
+            display: block;
+            width: 100%;
+            padding: 12px;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        .pricing-card .cta-primary {
+            background: #1d1d1f;
+            color: #ffffff;
+            border: none;
+        }
+
+        .pricing-card .cta-primary:hover {
+            background: #000000;
+        }
+
+        .pricing-card .cta-outline {
+            background: transparent;
+            color: #1d1d1f;
+            border: 1px solid #e5e5ea;
+        }
+
+        .pricing-card .cta-outline:hover {
+            background: #f5f5f7;
+        }
+
+        .pricing-card .cta-current {
+            background: #f5f5f7;
+            color: #86868b;
+            border: none;
+            cursor: default;
+        }
+
+        /* ===== SUCCESS PAGE ===== */
+        .success-page {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 40px 20px;
+        }
+
+        .success-card {
+            text-align: center;
+            max-width: 480px;
+        }
+
+        .success-card .icon {
+            font-size: 3rem;
+            margin-bottom: 16px;
+        }
+
+        .success-card h2 {
+            font-size: 1.4rem;
+            font-weight: 600;
+            color: #1d1d1f;
+            margin-bottom: 8px;
+        }
+
+        .success-card p {
+            color: #86868b;
+            font-size: 0.95rem;
+            margin-bottom: 24px;
+        }
+
+        .success-card .btn {
+            padding: 12px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: #1d1d1f;
+            color: #ffffff;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+        }
+
+        /* ===== ACCOUNT PAGE ===== */
+        .account-card {
+            width: 100%;
+            max-width: 480px;
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 32px;
+            box-shadow: 0 2px 12px rgba(0, 0, 0, 0.04);
+            border: 1px solid #e5e5ea;
+        }
+
+        .account-card h2 {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .account-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #f0f0f0;
+        }
+
+        .account-row:last-child {
+            border-bottom: none;
+        }
+
+        .account-row .label {
+            font-size: 0.85rem;
+            color: #86868b;
+        }
+
+        .account-row .value {
+            font-size: 0.9rem;
+            font-weight: 500;
+            color: #1d1d1f;
+        }
+
+        .account-upgrade-btn {
+            display: block;
+            width: 100%;
+            margin-top: 20px;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            background: #667eea;
+            color: #ffffff;
+            cursor: pointer;
+            font-family: inherit;
+            text-decoration: none;
+            text-align: center;
+        }
+
+        /* ===== SCROLLBAR ===== */
+        .sidebar::-webkit-scrollbar {
+            width: 4px;
+        }
+
+        .sidebar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb {
+            background: #3a3a5a;
+            border-radius: 10px;
+        }
+
+        .sidebar::-webkit-scrollbar-thumb:hover {
+            background: #4a4a6a;
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .sidebar {
+                width: 200px;
+                padding: 12px;
+            }
+            .main-header {
+                padding: 16px 20px 0 20px;
+            }
+            .chat-area {
+                padding: 16px;
+            }
+            .chat-area .welcome h2 {
+                font-size: 1.3rem;
+            }
+            .pricing-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 640px) {
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                width: 100%;
+                height: auto;
+                max-height: 200px;
+                flex-direction: row;
+                flex-wrap: wrap;
+                padding: 12px;
+                overflow-y: auto;
+            }
+            .sidebar .logo {
+                width: 100%;
+                margin-bottom: 8px;
+            }
+            .sidebar .history-list {
+                display: flex;
+                flex-wrap: nowrap;
+                gap: 6px;
+                overflow-x: auto;
+                width: 100%;
+            }
+            .sidebar .history-item {
+                flex: 0 0 auto;
+                max-width: 140px;
+                padding: 6px 10px;
+            }
+            .sidebar .section-title,
+            .sidebar .clear-btn,
+            .sidebar .footer,
+            .sidebar .auth-section {
+                display: none;
+            }
+            .main {
+                height: auto;
+                flex: 1;
+            }
+            .chat-area .input-container textarea {
+                min-height: 60px;
+                font-size: 0.95rem;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+    <div class="sidebar" id="sidebar">
+        <div class="logo">GenRep <span>v2</span></div>
+
+        <!-- Auth section (populated by JS) -->
+        <div class="auth-section" id="auth-section"></div>
+
+        <div class="section-title">History</div>
+        <div class="history-list" id="history-list">
+            <!-- populated by JS -->
+        </div>
+        <button class="clear-btn" id="clear-history-btn" onclick="clearHistory()">Clear All</button>
+        <div class="footer">GenRep v2.0</div>
+    </div>
+
+    <!-- ===== PAGE: GENERATE (default) ===== -->
+    <div class="main" id="page-generate" style="display:none">
+        <div class="main-header">
+            <div class="title">Report Generator</div>
+            <div class="status">
+                <span class="dot" id="status-dot"></span>
+                <span id="status-text">Ready</span>
+            </div>
+        </div>
+        <div class="chat-area">
+            <div class="welcome">
+                <h2>What report do you need?</h2>
+                <p>Describe your topic and GenRep will generate a professional report.</p>
+            </div>
+
+            <div class="tier-info-bar" id="tier-info-bar"></div>
+
+            <div class="input-container" id="input-container">
+                <textarea id="prompt" rows="3" placeholder="e.g., Write a market analysis report on renewable energy..."></textarea>
+                <div class="quick-actions">
+                    <button class="chip" data-prompt="Write a market analysis report on renewable energy, including key players, market size, and growth projections.">Market Analysis</button>
+                    <button class="chip" data-prompt="Write an academic paper on AI in healthcare, covering applications, ethics, and future directions.">Academic Paper</button>
+                    <button class="chip" data-prompt="Write a technical report on building an Arduino heart rate monitor, covering components, working principle, and implementation.">Tech Report</button>
+                    <button class="chip" data-prompt="Write a business plan for a SaaS startup, including executive summary, market analysis, and financial projections.">Business Plan</button>
+                </div>
+            </div>
+
+            <button class="generate-btn" id="generate-btn" onclick="startGeneration()">Generate Report</button>
+
+            <div class="status-display" id="status-display">
+                <div class="status-bar">
+                    <div class="message" id="status-message">Initializing...</div>
+                    <div class="steps">
+                        <span class="step" id="step-planning">Plan</span>
+                        <span class="step" id="step-research">Research</span>
+                        <span class="step" id="step-writing">Write</span>
+                        <span class="step" id="step-pdf">PDF</span>
+                    </div>
+                </div>
+                <div class="progress-track">
+                    <div class="fill" id="progress-bar"></div>
+                </div>
+                <div class="progress-label">
+                    <span id="progress-label">Starting...</span>
+                    <span id="progress-percent">0%</span>
+                </div>
+            </div>
+
+            <div class="download-area" id="download-area">
+                <div class="icon">&#10003;</div>
+                <div class="title">Report Complete</div>
+                <div class="sub">Generated by GenRep</div>
+                <button class="btn-download" onclick="downloadReport()">Download PDF</button>
+            </div>
+
+            <div class="error-area" id="error-area">
+                <span id="error-text"></span>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: SIGN IN ===== -->
+    <div class="main" id="page-signin" style="display:none">
+        <div class="auth-page">
+            <div class="auth-card">
+                <h2>Sign In</h2>
+                <p class="subtitle">Welcome back to GenRep</p>
+                <form id="signin-form" onsubmit="handleSignIn(event)">
+                    <input type="email" id="signin-email" placeholder="Email address" required />
+                    <input type="password" id="signin-password" placeholder="Password" required />
+                    <button type="submit" class="btn-primary" id="signin-btn">Sign In</button>
+                </form>
+                <div class="divider">or</div>
+                <button class="btn-secondary" onclick="handleMagicLink()">Send Magic Link</button>
+                <div class="auth-error" id="signin-error"></div>
+                <div class="auth-link">Don't have an account? <a href="#signup">Sign up</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: SIGN UP ===== -->
+    <div class="main" id="page-signup" style="display:none">
+        <div class="auth-page">
+            <div class="auth-card">
+                <h2>Create Account</h2>
+                <p class="subtitle">Start generating reports with GenRep</p>
+                <form id="signup-form" onsubmit="handleSignUp(event)">
+                    <input type="email" id="signup-email" placeholder="Email address" required />
+                    <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6" />
+                    <button type="submit" class="btn-primary" id="signup-btn">Create Account</button>
+                </form>
+                <div class="auth-error" id="signup-error"></div>
+                <div class="auth-link">Already have an account? <a href="#signin">Sign in</a></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: PRICING ===== -->
+    <div class="main" id="page-pricing" style="display:none">
+        <div class="auth-page">
+            <div style="text-align:center;margin-bottom:28px;">
+                <h2 style="font-size:1.4rem;font-weight:600;color:#1d1d1f;margin-bottom:4px;">Choose Your Plan</h2>
+                <p style="color:#86868b;font-size:0.95rem;">Get more reports with a higher tier</p>
+            </div>
+            <div class="pricing-grid">
+                <!-- Free tier -->
+                <div class="pricing-card">
+                    <div class="tier-name">Free</div>
+                    <div class="price">$0 <span>/ forever</span></div>
+                    <ul class="features">
+                        <li>Up to 10 page reports</li>
+                        <li>3 reports per day</li>
+                        <li>Web research included</li>
+                        <li>PDF download</li>
+                    </ul>
+                    <button class="cta cta-current" id="pricing-free-cta">Current Plan</button>
+                </div>
+                <!-- Pro tier -->
+                <div class="pricing-card featured">
+                    <div class="tier-name">Pro</div>
+                    <div class="price">$5 <span>/ one-time</span></div>
+                    <ul class="features">
+                        <li>Up to 50 page reports</li>
+                        <li>Unlimited reports</li>
+                        <li>Priority generation</li>
+                        <li>Advanced research</li>
+                    </ul>
+                    <a class="cta cta-primary" id="pricing-pro-cta" href="#" target="_blank">Upgrade for $5</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: SUCCESS ===== -->
+    <div class="main" id="page-success" style="display:none">
+        <div class="success-page">
+            <div class="success-card">
+                <div class="icon">&#10003;</div>
+                <h2 id="success-title">Payment Successful!</h2>
+                <p id="success-message">Your account is being upgraded to Pro. This may take a moment.</p>
+                <a class="btn" href="#generate">Back to Generator</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- ===== PAGE: ACCOUNT ===== -->
+    <div class="main" id="page-account" style="display:none">
+        <div class="auth-page">
+            <div class="account-card" id="account-card">
+                <!-- populated by JS -->
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        // ============================================================
+        // AUTH STATE
+        // ============================================================
+        let authState = {
+            type: 'anonymous',
+            tier: 'anonymous',
+            email: null,
+            reportsUsed: 0,
+            reportsLimit: 1,
+            pageLimit: 2,
+            dailyUsage: 0,
+            accessToken: localStorage.getItem('genrep_access_token'),
+        };
+
+        // ============================================================
+        // GENERATE STATE
+        // ============================================================
+        let currentJobId = null;
+        let pollingInterval = null;
+        let isGenerating = false;
+        let reportHistory = JSON.parse(localStorage.getItem('genrep_history') || '[]');
+
+        // ============================================================
+        // DOM REFS
+        // ============================================================
+        const promptEl = document.getElementById('prompt');
+        const generateBtn = document.getElementById('generate-btn');
+        const statusDisplay = document.getElementById('status-display');
+        const statusMessage = document.getElementById('status-message');
+        const progressBar = document.getElementById('progress-bar');
+        const progressLabel = document.getElementById('progress-label');
+        const progressPercent = document.getElementById('progress-percent');
+        const downloadArea = document.getElementById('download-area');
+        const errorArea = document.getElementById('error-area');
+        const errorText = document.getElementById('error-text');
+        const historyList = document.getElementById('history-list');
+        const statusDot = document.getElementById('status-dot');
+        const statusText = document.getElementById('status-text');
+        const tierInfoBar = document.getElementById('tier-info-bar');
+
+        // ============================================================
+        // HASH ROUTER
+        // ============================================================
+        const routes = {
+            '': renderGenerate,
+            'generate': renderGenerate,
+            'signin': renderSignin,
+            'signup': renderSignup,
+            'pricing': renderPricing,
+            'success': renderSuccess,
+            'account': renderAccount,
+        };
+
+        function navigateTo(hash) {
+            window.location.hash = hash;
+        }
+
+        window.addEventListener('hashchange', handleRoute);
+
+        function handleRoute() {
+            const hash = window.location.hash.slice(1) || '';
+            const handler = routes[hash] || renderGenerate;
+
+            // Hide all pages
+            document.querySelectorAll('.main').forEach(el => el.style.display = 'none');
+
+            handler();
+        }
+
+        // ============================================================
+        // PAGE RENDERERS
+        // ============================================================
+        function renderGenerate() {
+            document.getElementById('page-generate').style.display = 'flex';
+            updateTierInfoBar();
+            updateGenerateButton();
+        }
+
+        function renderSignin() {
+            document.getElementById('page-signin').style.display = 'flex';
+        }
+
+        function renderSignup() {
+            document.getElementById('page-signup').style.display = 'flex';
+        }
+
+        function renderPricing() {
+            document.getElementById('page-pricing').style.display = 'flex';
+            updatePricingCTA();
+        }
+
+        function renderSuccess() {
+            document.getElementById('page-success').style.display = 'flex';
+            refreshSession();
+        }
+
+        function renderAccount() {
+            document.getElementById('page-account').style.display = 'flex';
+            renderAccountCard();
+        }
+
+        // ============================================================
+        // SIDEBAR AUTH
+        // ============================================================
+        function updateSidebarAuth() {
+            const section = document.getElementById('auth-section');
+            if (authState.type === 'authenticated') {
+                section.innerHTML = `
+                    <div class="tier-badge ${authState.tier}">${authState.tier.toUpperCase()}</div>
+                    <span class="auth-email">${authState.email || ''}</span>
+                    <a class="auth-link" href="#account">Account</a>
+                    <button class="signout-btn" onclick="handleSignOut()">Sign Out</button>
+                `;
+            } else {
+                section.innerHTML = `
+                    <div class="tier-badge anonymous">ANONYMOUS</div>
+                    <a class="auth-link" href="#signin">Sign In for More Reports</a>
+                `;
+            }
+        }
+
+        function updateTierInfoBar() {
+            if (authState.tier === 'anonymous') {
+                tierInfoBar.innerHTML = `You have <strong>${authState.reportsLimit - authState.reportsUsed}</strong> free report(s) remaining. <a class="upgrade-link" href="#signup">Sign up</a> for 3/day.`;
+                tierInfoBar.classList.add('visible');
+            } else if (authState.tier === 'free') {
+                tierInfoBar.innerHTML = `${authState.dailyUsage}/${authState.reportsLimit} reports used today. <a class="upgrade-link" href="#pricing">Upgrade to Pro</a> for unlimited.`;
+                tierInfoBar.classList.add('visible');
+            } else {
+                tierInfoBar.classList.remove('visible');
+            }
+        }
+
+        function updateGenerateButton() {
+            if (authState.tier === 'anonymous' && authState.reportsUsed >= authState.reportsLimit) {
+                generateBtn.textContent = 'Sign In to Generate More';
+                generateBtn.onclick = () => navigateTo('signin');
+            } else {
+                generateBtn.textContent = 'Generate Report';
+                generateBtn.onclick = startGeneration;
+            }
+        }
+
+        function updatePricingCTA() {
+            const freeBtn = document.getElementById('pricing-free-cta');
+            const proBtn = document.getElementById('pricing-pro-cta');
+            if (authState.tier === 'free') {
+                freeBtn.textContent = 'Current Plan';
+                freeBtn.className = 'cta cta-current';
+                proBtn.href = 'https://gumroad.com/checkout?product_id=YOUR_PRODUCT_ID';
+            } else if (authState.tier === 'pro') {
+                freeBtn.textContent = 'Downgrade';
+                freeBtn.className = 'cta cta-current';
+                proBtn.textContent = 'Current Plan';
+                proBtn.className = 'cta cta-current';
+                proBtn.href = '#';
+            } else {
+                freeBtn.textContent = 'Sign Up Free';
+                freeBtn.className = 'cta cta-outline';
+                freeBtn.onclick = () => navigateTo('signup');
+                proBtn.href = 'https://gumroad.com/checkout?product_id=YOUR_PRODUCT_ID';
+            }
+        }
+
+        function renderAccountCard() {
+            const card = document.getElementById('account-card');
+            if (authState.type === 'anonymous') {
+                card.innerHTML = `
+                    <h2>Account</h2>
+                    <p style="color:#86868b;margin-bottom:16px;">You're browsing as a guest. Sign in to track your usage.</p>
+                    <a class="account-upgrade-btn" href="#signin" style="background:#1d1d1f;">Sign In</a>
+                `;
+                return;
+            }
+            const usagePct = authState.reportsLimit > 0 ? Math.round((authState.reportsUsed / authState.reportsLimit) * 100) : 0;
+            card.innerHTML = `
+                <h2>Account</h2>
+                <div class="account-row">
+                    <span class="label">Email</span>
+                    <span class="value">${authState.email || 'N/A'}</span>
+                </div>
+                <div class="account-row">
+                    <span class="label">Plan</span>
+                    <span class="value"><span class="tier-badge ${authState.tier}" style="font-size:0.7rem;">${authState.tier.toUpperCase()}</span></span>
+                </div>
+                <div class="account-row">
+                    <span class="label">Reports Today</span>
+                    <span class="value">${authState.dailyUsage} / ${authState.reportsLimit}</span>
+                </div>
+                <div class="account-row">
+                    <span class="label">Max Report Length</span>
+                    <span class="value">${authState.pageLimit} pages</span>
+                </div>
+                ${authState.tier === 'free' ? '<a class="account-upgrade-btn" href="#pricing">Upgrade to Pro</a>' : ''}
+                ${authState.tier === 'authenticated' ? '' : ''}
+            `;
+        }
+
+        // ============================================================
+        // AUTH API CALLS
+        // ============================================================
+        async function handleSignIn(e) {
+            e.preventDefault();
+            const email = document.getElementById('signin-email').value;
+            const password = document.getElementById('signin-password').value;
+            const errorEl = document.getElementById('signin-error');
+            const btn = document.getElementById('signin-btn');
+
+            errorEl.textContent = '';
+            btn.textContent = 'Signing in...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/auth/signin', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorEl.textContent = data.error || 'Sign in failed';
+                    return;
+                }
+
+                localStorage.setItem('genrep_access_token', data.access_token);
+                authState.accessToken = data.access_token;
+                await refreshSession();
+                navigateTo('generate');
+            } catch (err) {
+                errorEl.textContent = 'Network error: ' + err.message;
+            } finally {
+                btn.textContent = 'Sign In';
+                btn.disabled = false;
+            }
+        }
+
+        async function handleSignUp(e) {
+            e.preventDefault();
+            const email = document.getElementById('signup-email').value;
+            const password = document.getElementById('signup-password').value;
+            const errorEl = document.getElementById('signup-error');
+            const btn = document.getElementById('signup-btn');
+
+            errorEl.textContent = '';
+            btn.textContent = 'Creating account...';
+            btn.disabled = true;
+
+            try {
+                const res = await fetch('/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email, password }),
+                });
+                const data = await res.json();
+
+                if (!res.ok) {
+                    errorEl.textContent = data.error || 'Signup failed';
+                    return;
+                }
+
+                localStorage.setItem('genrep_access_token', data.access_token);
+                authState.accessToken = data.access_token;
+                await refreshSession();
+                navigateTo('generate');
+            } catch (err) {
+                errorEl.textContent = 'Network error: ' + err.message;
+            } finally {
+                btn.textContent = 'Create Account';
+                btn.disabled = false;
+            }
+        }
+
+        async function handleMagicLink() {
+            const email = document.getElementById('signin-email').value;
+            const errorEl = document.getElementById('signin-error');
+
+            if (!email) {
+                errorEl.textContent = 'Enter your email first';
+                return;
+            }
+
+            try {
+                const res = await fetch('/api/auth/magic-link', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email }),
+                });
+                const data = await res.json();
+                if (res.ok) {
+                    errorEl.style.color = '#166534';
+                    errorEl.textContent = 'Check your email for the login link';
+                } else {
+                    errorEl.style.color = '#991b1b';
+                    errorEl.textContent = data.error || 'Failed to send link';
+                }
+            } catch (err) {
+                errorEl.textContent = 'Network error: ' + err.message;
+            }
+        }
+
+        async function handleSignOut() {
+            localStorage.removeItem('genrep_access_token');
+            authState.accessToken = null;
+            authState.type = 'anonymous';
+            authState.tier = 'anonymous';
+            authState.email = null;
+            await fetch('/api/auth/signout', { method: 'POST' });
+            updateSidebarAuth();
+            navigateTo('generate');
+        }
+
+        async function refreshSession() {
+            try {
+                const headers = {};
+                if (authState.accessToken) {
+                    headers['Authorization'] = 'Bearer ' + authState.accessToken;
+                }
+                const res = await fetch('/api/auth/session', { headers });
+                const data = await res.json();
+                authState.type = data.type || 'anonymous';
+                authState.tier = data.tier || 'anonymous';
+                authState.email = data.email || null;
+                authState.reportsUsed = data.reports_used || 0;
+                authState.reportsLimit = data.reports_limit || 1;
+                authState.pageLimit = data.page_limit || 2;
+                authState.dailyUsage = data.daily_usage || 0;
+            } catch (err) {
+                console.warn('Session refresh failed:', err);
+            }
+            updateSidebarAuth();
+        }
+
+        // ============================================================
+        // INIT
+        // ============================================================
+        document.addEventListener('DOMContentLoaded', async () => {
+            await refreshSession();
+            handleRoute();
+            checkStatus();
+            renderHistory();
+        });
+
+        // Quick actions
+        document.querySelectorAll('.chip').forEach(btn => {
+            btn.addEventListener('click', () => {
+                promptEl.value = btn.dataset.prompt;
+                promptEl.focus();
+            });
+        });
+
+        // Ctrl+Enter shortcut
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
+                if (!isGenerating && window.location.hash.slice(1) || window.location.hash === '' || window.location.hash === '#generate') {
+                    startGeneration();
+                }
+            }
+        });
+
+        // ============================================================
+        // CHECK STATUS
+        // ============================================================
+        function checkStatus() {
+            fetch('/openmanus-status')
+                .then(r => r.json())
+                .then(data => {
+                    if (data.status === 'ready') {
+                        statusDot.className = 'dot';
+                        statusText.textContent = 'Ready';
+                    } else {
+                        statusDot.className = 'dot error';
+                        statusText.textContent = 'Error';
+                    }
+                })
+                .catch(() => {
+                    statusDot.className = 'dot error';
+                    statusText.textContent = 'Offline';
+                });
+        }
+
+        // ============================================================
+        // GENERATE
+        // ============================================================
+        function startGeneration() {
+            const prompt = promptEl.value.trim();
+            if (!prompt || prompt.length < 10) {
+                showError('Please enter a detailed prompt (min 10 characters).');
+                return;
+            }
+
+            clearAll();
+            isGenerating = true;
+            generateBtn.disabled = true;
+            generateBtn.textContent = 'Generating...';
+
+            statusDisplay.classList.add('visible');
+            updateStatus('Initializing...', 0);
+            resetSteps();
+
+            const headers = { 'Content-Type': 'application/json' };
+            if (authState.accessToken) {
+                headers['Authorization'] = 'Bearer ' + authState.accessToken;
+            }
+
+            fetch('/generate', {
+                    method: 'POST',
+                    headers,
+                    body: JSON.stringify({ prompt }),
+                })
+                .then(r => r.json().then(data => ({ ok: r.ok, data })))
+                .then(({ ok, data }) => {
+                    if (!ok || data.error) {
+                        showError(data.error || 'Generation failed');
+                        finishGeneration(false);
+                        return;
+                    }
+                    currentJobId = data.job_id;
+                    updateStatus('Working...', 5);
+                    startPolling();
+                })
+                .catch(err => {
+                    showError('Network error: ' + err.message);
+                    finishGeneration(false);
+                });
+        }
+
+        // ============================================================
+        // POLLING
+        // ============================================================
+        function startPolling() {
+            if (pollingInterval) clearInterval(pollingInterval);
+            pollingInterval = setInterval(checkProgress, 2000);
+            checkProgress();
+        }
+
+        function stopPolling() {
+            if (pollingInterval) {
+                clearInterval(pollingInterval);
+                pollingInterval = null;
+            }
+        }
+
+        function checkProgress() {
+            if (!currentJobId) return;
+
+            fetch('/status/' + currentJobId)
+                .then(r => r.json())
+                .then(data => {
+                    if (data.error) {
+                        showError(data.error);
+                        finishGeneration(false);
+                        return;
+                    }
+
+                    const progress = data.progress || 0;
+                    const message = data.message || 'Processing...';
+                    const state = data.status || 'pending';
+
+                    updateStatus(message, progress);
+                    updateSteps(progress, state);
+
+                    if (state === 'complete' || state === 'success') {
+                        finishGeneration(true, data.download_url);
+                    } else if (state === 'failed' || state === 'failure') {
+                        showError(data.message || 'Generation failed');
+                        finishGeneration(false);
+                    }
+                })
+                .catch(err => {
+                    console.warn('Poll error:', err);
+                });
+        }
+
+        // ============================================================
+        // UI UPDATES
+        // ============================================================
+        function updateStatus(message, progress) {
+            statusMessage.textContent = message;
+            progressBar.style.width = Math.min(progress, 100) + '%';
+            progressPercent.textContent = Math.min(progress, 100) + '%';
+
+            if (progress < 10) progressLabel.textContent = 'Starting...';
+            else if (progress < 30) progressLabel.textContent = 'Planning...';
+            else if (progress < 50) progressLabel.textContent = 'Researching...';
+            else if (progress < 70) progressLabel.textContent = 'Writing...';
+            else if (progress < 90) progressLabel.textContent = 'Generating PDF...';
+            else if (progress < 100) progressLabel.textContent = 'Finalizing...';
+            else progressLabel.textContent = 'Complete!';
+        }
+
+        function resetSteps() {
+            ['planning', 'research', 'writing', 'pdf'].forEach(id => {
+                const el = document.getElementById('step-' + id);
+                el.className = 'step';
+            });
+        }
+
+        function updateSteps(progress, state) {
+            const stages = [
+                { id: 'planning', min: 0, max: 25 },
+                { id: 'research', min: 25, max: 55 },
+                { id: 'writing', min: 55, max: 80 },
+                { id: 'pdf', min: 80, max: 100 }
+            ];
+
+            stages.forEach(({ id, min, max }) => {
+                const el = document.getElementById('step-' + id);
+                if (!el) return;
+                if (progress >= max || state === 'complete') {
+                    el.className = 'step done';
+                } else if (progress >= min) {
+                    el.className = 'step active';
+                } else {
+                    el.className = 'step';
+                }
+            });
+
+            if (state === 'complete') {
+                document.querySelectorAll('.steps .step').forEach(el => {
+                    el.className = 'step done';
+                });
+            }
+        }
+
+        // ============================================================
+        // FINISH
+        // ============================================================
+        function finishGeneration(success, downloadUrl) {
+            stopPolling();
+            isGenerating = false;
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Report';
+            updateGenerateButton();
+
+            if (success) {
+                updateStatus('Report complete!', 100);
+                document.querySelectorAll('.steps .step').forEach(el => {
+                    el.className = 'step done';
+                });
+                downloadArea.classList.add('visible');
+
+                const historyItem = {
+                    id: currentJobId,
+                    prompt: promptEl.value.slice(0, 60) + (promptEl.value.length > 60 ? '...' : ''),
+                    status: 'complete',
+                    date: new Date().toISOString(),
+                    downloadUrl: downloadUrl || `/download/${currentJobId}`
+                };
+                reportHistory.unshift(historyItem);
+                if (reportHistory.length > 20) reportHistory.pop();
+                localStorage.setItem('genrep_history', JSON.stringify(reportHistory));
+                renderHistory();
+                refreshSession();
+
+            } else {
+                document.querySelectorAll('.steps .step').forEach(el => {
+                    el.className = 'step';
+                });
+            }
+        }
+
+        function showError(message) {
+            errorArea.classList.add('visible');
+            errorText.textContent = message;
+            finishGeneration(false);
+        }
+
+        function clearAll() {
+            stopPolling();
+            isGenerating = false;
+            generateBtn.disabled = false;
+            generateBtn.textContent = 'Generate Report';
+            updateGenerateButton();
+            currentJobId = null;
+
+            statusDisplay.classList.remove('visible');
+            downloadArea.classList.remove('visible');
+            errorArea.classList.remove('visible');
+
+            progressBar.style.width = '0%';
+            progressPercent.textContent = '0%';
+            resetSteps();
+        }
+
+        // ============================================================
+        // DOWNLOAD
+        // ============================================================
+        function downloadReport() {
+            if (!currentJobId) return;
+            window.location.href = `/download/${currentJobId}`;
+        }
+
+        function downloadHistory(jobId) {
+            window.location.href = `/download/${jobId}`;
+        }
+
+        // ============================================================
+        // HISTORY
+        // ============================================================
+        function renderHistory() {
+            if (reportHistory.length === 0) {
+                historyList.innerHTML = '<div style="color:#8888a0;font-size:0.8rem;padding:8px 0;">No reports yet.</div>';
+                return;
+            }
+
+            historyList.innerHTML = reportHistory.slice(0, 20).map(item => `
+                <div class="history-item">
+                    <span class="prompt-preview">${escapeHtml(item.prompt)}</span>
+                    <span class="status-badge ${item.status}">${item.status}</span>
+                    ${item.status === 'complete' ? `<button class="dl-btn" onclick="downloadHistory('${item.id}')">Download</button>` : ''}
+                </div>
+            `).join('');
+        }
+
+        function clearHistory() {
+            reportHistory = [];
+            localStorage.setItem('genrep_history', JSON.stringify(reportHistory));
+            renderHistory();
+        }
+
+        function escapeHtml(str) {
+            const div = document.createElement('div');
+            div.textContent = str;
+            return div.innerHTML;
+        }
+    </script>
+
+</body>
+</html>
