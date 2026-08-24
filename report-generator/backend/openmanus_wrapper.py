@@ -137,7 +137,7 @@ class OpenManusWrapper:
             before = self._snapshot_workspace()
             _emit(20 + (attempt - 1) * 30, "Execution Agents: researching and writing...")
 
-            result = self._run_via_import(current_prompt, _emit)
+            result = self._run_via_import(current_prompt, _emit, page_limit=page_limit)
 
             after = self._snapshot_workspace()
             new_files = self._diff_workspace(before, after)
@@ -260,7 +260,7 @@ Return the complete revised report.
     # ------------------------------------------------------------------
     # Execution
     # ------------------------------------------------------------------
-    def _run_via_import(self, prompt: str, emit: Callable) -> str:
+    def _run_via_import(self, prompt: str, emit: Callable, page_limit: int = 2) -> str:
         """Run GenRep by importing its modules and driving the agent."""
         sys.path.insert(0, str(self.openmanus_path))
 
@@ -517,7 +517,7 @@ Write the report now. Use your training knowledge and the browser tool to resear
         else:
             return (True, "Report passes all quality checks.")
 
-    def _revise_report(self, original_prompt: str, current_report: str, feedback: str, progress_cb: Optional[Callable] = None) -> str:
+    def _revise_report(self, original_prompt: str, current_report: str, feedback: str, progress_cb: Optional[Callable] = None, page_limit: int = 2) -> str:
         """
         Generate revision instructions and run OpenManus again.
         """
@@ -540,7 +540,7 @@ INSTRUCTIONS:
 
 Generate the revised report now.
 """
-        return self.run_report(revision_prompt, progress_cb=progress_cb)
+        return self.run_report(revision_prompt, progress_cb=progress_cb, page_limit=page_limit)
 
     def _run_via_cli(self, prompt: str) -> str:
         """Fallback: run GenRep via its CLI in a subprocess."""

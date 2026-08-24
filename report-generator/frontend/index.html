@@ -1499,7 +1499,8 @@
         // Ctrl+Enter shortcut
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Enter' && (e.ctrlKey || e.metaKey)) {
-                if (!isGenerating && window.location.hash.slice(1) || window.location.hash === '' || window.location.hash === '#generate') {
+                const hash = window.location.hash.slice(1) || '';
+                if (!isGenerating && (hash === '' || hash === 'generate')) {
                     startGeneration();
                 }
             }
