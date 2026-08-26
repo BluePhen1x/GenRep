@@ -595,12 +595,6 @@
             height: 100%;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .auth-track.slide-to-signup {
-            transform: translateX(-50%);
-        }
-        .auth-track.slide-to-signin {
-            transform: translateX(0);
-        }
         .auth-panel {
             flex: 0 0 100%;
             display: flex;
@@ -1759,6 +1753,7 @@
             currentHash = hash;
 
             const slider = document.getElementById('auth-slider');
+            const track = document.getElementById('auth-track');
             const sidebar = document.getElementById('sidebar');
             const isAuthPage = (hash === '' || hash === 'signin' || hash === 'signup');
 
@@ -1771,7 +1766,15 @@
             document.querySelectorAll('.main').forEach(el => el.style.display = 'none');
 
             if (isAuthPage) {
+                const wasHidden = slider.style.display === 'none' || !slider.style.display;
                 slider.style.display = 'block';
+                if (wasHidden) {
+                    // Coming from a non-auth page — snap to correct position without animation
+                    track.style.transition = 'none';
+                    track.style.transform = hash === 'signup' ? 'translateX(-50%)' : 'translateX(0)';
+                    void track.offsetWidth;
+                    track.style.transition = '';
+                }
             } else {
                 slider.style.display = 'none';
             }
@@ -1790,18 +1793,16 @@
 
         function renderSignin() {
             const slider = document.getElementById('auth-slider');
-            slider.style.display = 'block';
             const track = document.getElementById('auth-track');
-            track.classList.remove('slide-to-signup');
-            track.classList.add('slide-to-signin');
+            slider.style.display = 'block';
+            track.style.transform = 'translateX(0)';
         }
 
         function renderSignup() {
             const slider = document.getElementById('auth-slider');
-            slider.style.display = 'block';
             const track = document.getElementById('auth-track');
-            track.classList.remove('slide-to-signin');
-            track.classList.add('slide-to-signup');
+            slider.style.display = 'block';
+            track.style.transform = 'translateX(-50%)';
         }
 
         function renderPricing() {
