@@ -30,6 +30,7 @@ from openmanus_wrapper import wrapper
 from rate_limit import get_rate_limiter, parse_rate_limit
 from tasks import generate_report
 from webhooks import router as webhook_router
+from google_auth import router as google_auth_router
 
 app = FastAPI(
     title="Report Generator (Powered by GenRep)",
@@ -47,6 +48,8 @@ app.add_middleware(
 
 # Include Gumroad webhook router
 app.include_router(webhook_router)
+# Include Google OAuth router
+app.include_router(google_auth_router)
 
 
 # ---------------------------------------------------------------------------

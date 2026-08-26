@@ -1677,8 +1677,35 @@
         window.addEventListener('hashchange', handleRoute);
 
         function handleRoute() {
+            const rawHash = window.location.hash.slice(1) || '';
+            currentHash = rawHash;
+
+            // Check for Google OAuth callback tokens in the hash
+            // Format: #signin&access_token=...&refresh_token=...&type=google
+            if (rawHash.includes('access_token=') && rawHash.includes('refresh_token=')) {
+                const params = new URLSearchParams(rawHash.replace('&', '&'));
+                const accessToken = params.get('access_token');
+                const refreshToken = params.get('refresh_token');
+                const type = params.get('type');
+
+                if (accessToken && refreshToken) {
+                    localStorage.setItem('genrep_access_token', accessToken);
+                    localStorage.setItem('genrep_refresh_token', refreshToken);
+                }
+
+                // Clean URL — remove tokens from hash
+                history.replaceState(null, '', window.location.pathname + '#signin');
+
+                // If fallback (no session, just email), show signin with message
+                if (type === 'google_fallback') {
+                    const email = params.get('email');
+                    if (email) {
+                        localStorage.setItem('genrep_google_email', email);
+                    }
+                }
+            }
+
             const hash = window.location.hash.slice(1) || '';
-            currentHash = hash;
 
             const slider = document.getElementById('auth-slider');
             const sidebar = document.getElementById('sidebar');
@@ -1868,18 +1895,7 @@
         // AUTH API CALLS
         // ============================================================
         async function handleGoogleSignIn() {
-            const sb = getSupabase();
-            if (!sb) {
-                alert('Auth not configured. Set SUPABASE_URL and SUPABASE_ANON_KEY.');
-                return;
-            }
-            const { error } = await sb.auth.signInWithOAuth({
-                provider: 'google',
-                options: {
-                    redirectTo: window.location.origin,
-                },
-            });
-            if (error) console.error('Google sign-in error:', error);
+            window.location.href = '/auth/google';
         }
 
         function handleTryFree() {
@@ -2027,23 +2043,27 @@
         document.addEventListener('DOMContentLoaded', async () => {
             await loadSiteConfig();
 
-            // Handle OAuth callback (Supabase redirects with tokens in URL hash)
+            // Handle Google OAuth callback — tokens come in URL hash
             const hash = window.location.hash;
-            if (hash.includes('access_token')) {
-                const sb = getSupabase();
-                if (sb) {
-                    const { data } = await sb.auth.getSession();
-                    if (data.session) {
-                        localStorage.setItem('genrep_access_token', data.session.access_token);
-                        authState.accessToken = data.session.access_token;
-                        // Clean the URL
-                        window.history.replaceState({}, document.title, window.location.pathname);
-                    }
+            if (hash.includes('access_token=') && hash.includes('refresh_token=')) {
+                const rawHash = hash.slice(1);
+                const params = new URLSearchParams(rawHash.replace('&', '&'));
+                const accessToken = params.get('access_token');
+                const refreshToken = params.get('refresh_token');
+
+                if (accessToken) {
+                    localStorage.setItem('genrep_access_token', accessToken);
+                    authState.accessToken = accessToken;
                 }
+                if (refreshToken) {
+                    localStorage.setItem('genrep_refresh_token', refreshToken);
+                }
+
+                // Clean the URL
+                history.replaceState(null, '', window.location.pathname + '#signin');
             }
 
             await refreshSession();
-            // Redirect based on auth state
             const currentHash = window.location.hash.slice(1) || '';
             if (authState.type === 'authenticated' && (currentHash === '' || currentHash === 'signin' || currentHash === 'signup')) {
                 navigateTo('generate');

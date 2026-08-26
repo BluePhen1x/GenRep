@@ -90,6 +90,10 @@ class Config:
     # ---- Cookie Signing ----
     COOKIE_SECRET = os.getenv("COOKIE_SECRET", "change-me-in-production-" + os.urandom(16).hex())
 
+    # ---- Google OAuth ----
+    GOOGLE_CLIENT_ID = os.getenv("GOOGLE_CLIENT_ID", "")
+    GOOGLE_CLIENT_SECRET = os.getenv("GOOGLE_CLIENT_SECRET", "")
+
     # ---- CORS ----
     ALLOWED_ORIGINS = os.getenv("ALLOWED_ORIGINS", "*").split(",")
 
