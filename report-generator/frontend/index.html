@@ -593,6 +593,7 @@
         }
         .auth-track {
             display: flex;
+            width: 200%;
             height: 100%;
             transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
@@ -1769,18 +1770,20 @@
             if (isAuthPage) {
                 const wasHidden = slider.style.display === 'none' || !slider.style.display;
                 slider.style.display = 'block';
+                const target = (hash === 'signup') ? 'translateX(-50%)' : 'translateX(0)';
                 if (wasHidden) {
-                    // Coming from a non-auth page — snap to correct position without animation
                     track.style.transition = 'none';
-                    track.style.transform = hash === 'signup' ? 'translateX(-50%)' : 'translateX(0)';
+                    track.style.transform = target;
                     void track.offsetWidth;
                     track.style.transition = '';
+                } else {
+                    track.style.transform = target;
                 }
             } else {
                 slider.style.display = 'none';
             }
 
-            handler();
+            if (!isAuthPage) handler();
         }
 
         // ============================================================
