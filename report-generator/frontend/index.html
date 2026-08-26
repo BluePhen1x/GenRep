@@ -600,9 +600,13 @@
             transition: transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
         }
         .swap-left {
-            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            background: linear-gradient(160deg, #0a0a1a 0%, #111133 30%, #1a1a3e 60%, #0f0c29 100%);
             overflow-y: auto;
             position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 56px 52px;
         }
         .swap-right {
             background: linear-gradient(180deg, #fafafa 0%, #f3f3f5 100%);
@@ -626,7 +630,7 @@
             align-items: stretch;
             overflow: hidden;
         }
-        .hero-left, .swap-left {
+        .hero-left {
             flex: 1;
             background: linear-gradient(160deg, #0a0a1a 0%, #111133 30%, #1a1a3e 60%, #0f0c29 100%);
             display: flex;
@@ -636,7 +640,7 @@
             position: relative;
             overflow: hidden;
         }
-        .hero-left::before, .swap-left::before {
+        .hero-left::before {
             content: '';
             position: absolute;
             top: -30%;
@@ -647,7 +651,7 @@
             border-radius: 50%;
             animation: floatSlow 8s ease-in-out infinite;
         }
-        .hero-left::after, .swap-left::after {
+        .hero-left::after {
             content: '';
             position: absolute;
             bottom: -25%;
@@ -836,7 +840,7 @@
                 flex-direction: column;
                 overflow-y: auto;
             }
-            .hero-left, .swap-left {
+            .hero-left {
                 padding: 40px 28px;
                 min-height: auto;
             }
