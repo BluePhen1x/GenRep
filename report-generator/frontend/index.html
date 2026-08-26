@@ -386,10 +386,20 @@
         }
 
         .tier-info-bar.visible { display: block; }
+        .tier-info-bar.anon-warning {
+            background: #fff3cd;
+            border: 1px solid #ffc107;
+            color: #856404;
+            font-weight: 500;
+        }
         .tier-info-bar .upgrade-link {
             color: #667eea;
             text-decoration: none;
             font-weight: 500;
+        }
+        .tier-info-bar.anon-warning .upgrade-link {
+            color: #0056b3;
+            text-decoration: underline;
         }
 
         /* ===== STATUS DISPLAY ===== */
@@ -646,6 +656,34 @@
         .auth-card .btn-google:hover {
             background: #f5f5f7;
             box-shadow: 0 1px 3px rgba(0,0,0,0.08);
+        }
+
+        .auth-card .btn-try-free {
+            width: 100%;
+            padding: 14px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #ffffff;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-family: inherit;
+            margin-bottom: 4px;
+        }
+
+        .auth-card .btn-try-free:hover {
+            opacity: 0.9;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+        }
+
+        .auth-card .try-free-note {
+            text-align: center;
+            font-size: 0.78rem;
+            color: #86868b;
+            margin: 0 0 4px 0;
         }
 
         .auth-card .divider {
@@ -1068,6 +1106,9 @@
             <div class="auth-card">
                 <h2>Sign In</h2>
                 <p class="subtitle">Welcome back to GenRep</p>
+                <button class="btn-try-free" onclick="handleTryFree()">Try for Free</button>
+                <p class="try-free-note">No account needed — 1 free report, 2 pages</p>
+                <div class="divider">or sign in</div>
                 <form id="signin-form" onsubmit="handleSignIn(event)">
                     <input type="email" id="signin-email" placeholder="Email address" required />
                     <input type="password" id="signin-password" placeholder="Password" required />
@@ -1091,6 +1132,9 @@
             <div class="auth-card">
                 <h2>Create Account</h2>
                 <p class="subtitle">Start generating reports with GenRep</p>
+                <button class="btn-try-free" onclick="handleTryFree()">Try for Free</button>
+                <p class="try-free-note">No account needed — 1 free report, 2 pages</p>
+                <div class="divider">or sign up</div>
                 <form id="signup-form" onsubmit="handleSignUp(event)">
                     <input type="email" id="signup-email" placeholder="Email address" required />
                     <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6" />
@@ -1221,7 +1265,7 @@
         // HASH ROUTER
         // ============================================================
         const routes = {
-            '': renderGenerate,
+            '': renderSignin,
             'generate': renderGenerate,
             'signin': renderSignin,
             'signup': renderSignup,
@@ -1238,7 +1282,7 @@
 
         function handleRoute() {
             const hash = window.location.hash.slice(1) || '';
-            const handler = routes[hash] || renderGenerate;
+            const handler = routes[hash] || renderSignin;
 
             // Hide all pages
             document.querySelectorAll('.main').forEach(el => el.style.display = 'none');
@@ -1300,13 +1344,13 @@
 
         function updateTierInfoBar() {
             if (authState.tier === 'anonymous') {
-                tierInfoBar.innerHTML = `You have <strong>${authState.reportsLimit - authState.reportsUsed}</strong> free report(s) remaining. <a class="upgrade-link" href="#signup">Sign up</a> for 3/day.`;
-                tierInfoBar.classList.add('visible');
+                tierInfoBar.className = 'tier-info-bar visible anon-warning';
+                tierInfoBar.innerHTML = '&#9888; You are in <strong>Anonymous Mode</strong> &mdash; only <strong>1 free report</strong> (2 pages). <a class="upgrade-link" href="#signin">Sign in</a> to unlock 3 reports/day and longer reports.';
             } else if (authState.tier === 'free') {
+                tierInfoBar.className = 'tier-info-bar visible';
                 tierInfoBar.innerHTML = `${authState.dailyUsage}/${authState.reportsLimit} reports used today. <a class="upgrade-link" href="#pricing">Upgrade to Pro</a> for unlimited.`;
-                tierInfoBar.classList.add('visible');
             } else {
-                tierInfoBar.classList.remove('visible');
+                tierInfoBar.className = 'tier-info-bar';
             }
         }
 
@@ -1403,6 +1447,14 @@
             });
             if (error) console.error('Google sign-in error:', error);
         }
+
+        function handleTryFree() {
+            // Stay anonymous, just navigate to generate page
+            authState.type = 'anonymous';
+            authState.tier = 'anonymous';
+            navigateTo('generate');
+        }
+
         async function handleSignIn(e) {
             e.preventDefault();
             const email = document.getElementById('signin-email').value;
@@ -1557,7 +1609,13 @@
             }
 
             await refreshSession();
-            handleRoute();
+            // Redirect based on auth state
+            const currentHash = window.location.hash.slice(1) || '';
+            if (authState.type === 'authenticated' && (currentHash === '' || currentHash === 'signin' || currentHash === 'signup')) {
+                navigateTo('generate');
+            } else {
+                handleRoute();
+            }
             checkStatus();
             renderHistory();
         });
