@@ -1675,11 +1675,9 @@
 
         function handleRoute() {
             const hash = window.location.hash.slice(1) || '';
-            const handler = routes[hash] || renderSignin;
             currentHash = hash;
 
             const slider = document.getElementById('auth-slider');
-            const track = document.getElementById('auth-track');
             const sidebar = document.getElementById('sidebar');
             const isAuthPage = (hash === '' || hash === 'signin' || hash === 'signup');
 
@@ -1692,22 +1690,17 @@
             document.querySelectorAll('.main').forEach(el => el.style.display = 'none');
 
             if (isAuthPage) {
-                const wasHidden = slider.style.display === 'none' || !slider.style.display;
-                slider.style.display = 'block';
-                const target = (hash === 'signup') ? 'translateX(-50%)' : 'translateX(0)';
-                if (wasHidden) {
-                    track.style.transition = 'none';
-                    track.style.transform = target;
-                    void track.offsetWidth;
-                    track.style.transition = '';
+                slider.style.display = 'flex';
+                if (hash === 'signup') {
+                    renderSignup();
                 } else {
-                    track.style.transform = target;
+                    renderSignin();
                 }
             } else {
                 slider.style.display = 'none';
+                const handler = routes[hash];
+                if (handler) handler();
             }
-
-            if (!isAuthPage) handler();
         }
 
         // ============================================================
@@ -1721,7 +1714,6 @@
 
         function renderSignin() {
             const slider = document.getElementById('auth-slider');
-            slider.style.display = 'flex';
             slider.classList.remove('signup-mode');
             document.getElementById('swap-text-signin').style.display = '';
             document.getElementById('swap-text-signup').style.display = 'none';
@@ -1733,7 +1725,6 @@
 
         function renderSignup() {
             const slider = document.getElementById('auth-slider');
-            slider.style.display = 'flex';
             slider.classList.add('signup-mode');
             document.getElementById('swap-text-signin').style.display = 'none';
             document.getElementById('swap-text-signup').style.display = '';
