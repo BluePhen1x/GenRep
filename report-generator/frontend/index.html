@@ -589,6 +589,7 @@
             flex: 1;
             overflow: hidden;
             position: relative;
+            min-height: 0;
         }
         .auth-track {
             display: flex;
@@ -780,12 +781,13 @@
         .hero-right {
             width: 440px;
             display: flex;
-            align-items: center;
+            align-items: safe center;
             justify-content: center;
             padding: 44px;
             background: linear-gradient(180deg, #fafafa 0%, #f3f3f5 100%);
             flex-shrink: 0;
             position: relative;
+            overflow-y: auto;
         }
         .hero-right::before {
             content: '';
@@ -801,7 +803,6 @@
         .hero-card {
             max-width: 360px;
             width: 100%;
-            animation: heroFadeInRight 0.5s ease-out 0.2s both;
             background: rgba(255,255,255,0.85);
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
@@ -814,7 +815,7 @@
 
         /* Responsive */
         @media (max-width: 860px) {
-            .hero-page {
+            .hero-page, .auth-panel {
                 flex-direction: column;
                 overflow-y: auto;
             }
