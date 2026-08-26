@@ -584,6 +584,32 @@
             50% { opacity: 1; }
         }
 
+        /* ---- Auth Slider ---- */
+        .auth-slider-wrapper {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            display: flex;
+        }
+        .auth-slider-wrapper > .main {
+            position: absolute;
+            inset: 0;
+            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
+            will-change: transform, opacity;
+        }
+        .auth-slider-wrapper > .main.slide-out-left {
+            transform: translateX(-30%);
+            opacity: 0;
+        }
+        .auth-slider-wrapper > .main.slide-out-right {
+            transform: translateX(100%);
+            opacity: 0;
+        }
+        .auth-slider-wrapper > .main.slide-active {
+            transform: translateX(0);
+            opacity: 1;
+        }
+
         /* ---- Hero Landing Page ---- */
         .hero-page {
             flex: 1;
@@ -1394,8 +1420,10 @@
         </div>
     </div>
 
+    <!-- ===== AUTH SLIDER WRAPPER ===== -->
+    <div class="auth-slider-wrapper" id="auth-slider-wrapper" style="display:none">
     <!-- ===== PAGE: SIGN IN (HERO LANDING) ===== -->
-    <div class="main" id="page-signin" style="display:none">
+    <div class="main slide-active" id="page-signin" style="display:none">
         <div class="hero-page">
             <div class="hero-left">
                 <div class="hero-grid"></div>
@@ -1608,6 +1636,7 @@
             </div>
         </div>
     </div>
+    </div><!-- /auth-slider-wrapper -->
 
     <!-- ===== PAGE: PRICING ===== -->
     <div class="main" id="page-pricing" style="display:none">
@@ -1671,6 +1700,7 @@
         // ============================================================
         // AUTH STATE
         // ============================================================
+        let currentHash = '';
         let authState = {
             type: 'anonymous',
             tier: 'anonymous',
@@ -1741,19 +1771,59 @@
         function handleRoute() {
             const hash = window.location.hash.slice(1) || '';
             const handler = routes[hash] || renderSignin;
+            const prevHash = currentHash;
+            currentHash = hash;
 
-            // Hide all pages
-            document.querySelectorAll('.main').forEach(el => el.style.display = 'none');
+            const wrapper = document.getElementById('auth-slider-wrapper');
+            const sidebar = document.getElementById('sidebar');
+            const isAuthPage = (hash === '' || hash === 'signin' || hash === 'signup');
+
+            // Check if we're sliding between signin <-> signup
+            const slidingBetweenAuth = wrapper && isAuthPage &&
+                (prevHash === '' || prevHash === 'signin' || prevHash === 'signup');
 
             // Hide sidebar on landing/auth pages
-            const sidebar = document.getElementById('sidebar');
-            if (hash === '' || hash === 'signin' || hash === 'signup' || hash === 'pricing') {
+            if (isAuthPage || hash === 'pricing') {
                 sidebar.style.display = 'none';
             } else {
                 sidebar.style.display = '';
             }
 
-            handler();
+            // Hide all non-auth pages
+            document.querySelectorAll('.main').forEach(el => {
+                if (el.id !== 'page-signin' && el.id !== 'page-signup') {
+                    el.style.display = 'none';
+                }
+            });
+
+            if (slidingBetweenAuth) {
+                // Slide between signin and signup
+                const signinPage = document.getElementById('page-signin');
+                const signupPage = document.getElementById('page-signup');
+                wrapper.style.display = 'flex';
+                const goingToSignup = (hash === '' || hash === 'signin') ? false : true;
+
+                if (goingToSignup) {
+                    // Signup slides in from right, signin slides out left
+                    signinPage.style.display = 'flex';
+                    signupPage.style.display = 'flex';
+                    signinPage.classList.remove('slide-active');
+                    signinPage.classList.add('slide-out-left');
+                    signupPage.classList.remove('slide-out-right');
+                    signupPage.classList.add('slide-active');
+                } else {
+                    // Signin slides in from left, signup slides out right
+                    signinPage.style.display = 'flex';
+                    signupPage.style.display = 'flex';
+                    signupPage.classList.remove('slide-active');
+                    signupPage.classList.add('slide-out-right');
+                    signinPage.classList.remove('slide-out-left');
+                    signinPage.classList.add('slide-active');
+                }
+            } else {
+                // Normal route — just show/hide
+                handler();
+            }
         }
 
         // ============================================================
@@ -1766,11 +1836,29 @@
         }
 
         function renderSignin() {
-            document.getElementById('page-signin').style.display = 'flex';
+            const wrapper = document.getElementById('auth-slider-wrapper');
+            wrapper.style.display = 'flex';
+            const signinPage = document.getElementById('page-signin');
+            const signupPage = document.getElementById('page-signup');
+            signinPage.style.display = 'flex';
+            signupPage.style.display = 'none';
+            signinPage.classList.remove('slide-out-left', 'slide-out-right');
+            signinPage.classList.add('slide-active');
+            signupPage.classList.remove('slide-active', 'slide-out-left');
+            signupPage.classList.add('slide-out-right');
         }
 
         function renderSignup() {
-            document.getElementById('page-signup').style.display = 'flex';
+            const wrapper = document.getElementById('auth-slider-wrapper');
+            wrapper.style.display = 'flex';
+            const signinPage = document.getElementById('page-signin');
+            const signupPage = document.getElementById('page-signup');
+            signupPage.style.display = 'flex';
+            signinPage.style.display = 'none';
+            signupPage.classList.remove('slide-out-left', 'slide-out-right');
+            signupPage.classList.add('slide-active');
+            signinPage.classList.remove('slide-active', 'slide-out-right');
+            signinPage.classList.add('slide-out-left');
         }
 
         function renderPricing() {
