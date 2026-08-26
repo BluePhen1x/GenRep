@@ -585,43 +585,26 @@
         }
 
         /* ---- Auth Slider ---- */
-        .auth-slider-wrapper {
+        .auth-slider {
             flex: 1;
+            overflow: hidden;
+            position: relative;
+        }
+        .auth-track {
             display: flex;
-            position: relative;
-            overflow: hidden;
-        }
-        .auth-slider-wrapper .hero-right {
-            position: relative;
-            overflow: hidden;
-        }
-        .auth-card-slider {
-            position: relative;
-            width: 100%;
             height: 100%;
+            transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .card-slide {
-            position: absolute;
-            inset: 0;
-            transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.35s ease;
-            will-change: transform, opacity;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
+        .auth-track.slide-to-signup {
+            transform: translateX(-50%);
         }
-        .card-slide.card-active {
+        .auth-track.slide-to-signin {
             transform: translateX(0);
-            opacity: 1;
         }
-        .card-slide.card-right {
-            transform: translateX(100%);
-            opacity: 0;
-        }
-        .card-slide.card-left {
-            transform: translateX(-100%);
-            opacity: 0;
+        .auth-panel {
+            flex: 0 0 100%;
+            display: flex;
+            height: 100%;
         }
 
         /* ---- Hero Landing Page ---- */
@@ -1434,157 +1417,207 @@
         </div>
     </div>
 
-    <!-- ===== AUTH SLIDER WRAPPER ===== -->
-    <div class="auth-slider-wrapper" id="auth-slider-wrapper" style="display:none">
-        <div class="hero-left" id="auth-hero-left">
-            <div class="hero-grid"></div>
-            <div class="hero-accent"></div>
-            <div class="hero-content">
-                <div class="hero-logo">GenRep</div>
-                <!-- Sign-in content (default) -->
-                <div class="hero-text" id="hero-text-signin">
-                    <h1 class="hero-title">AI Reports,<br><span class="highlight">Built by Agents.</span></h1>
-                    <p class="hero-subtitle">Multi-agent research, writing, and verification — producing publication-ready PDF reports in minutes.</p>
+    <!-- ===== AUTH SLIDER ===== -->
+    <div class="auth-slider" id="auth-slider" style="display:none">
+        <div class="auth-track" id="auth-track">
+            <!-- ===== SIGN IN PAGE ===== -->
+            <div class="auth-panel">
+                <div class="hero-left">
+                    <div class="hero-grid"></div>
+                    <div class="hero-accent"></div>
+                    <div class="hero-content">
+                        <div class="hero-logo">GenRep</div>
+                        <h1 class="hero-title">AI Reports,<br><span class="highlight">Built by Agents.</span></h1>
+                        <p class="hero-subtitle">Multi-agent research, writing, and verification — producing publication-ready PDF reports in minutes.</p>
+                        <div class="hero-features">
+                            <div class="hero-feature">
+                                <div class="feature-icon">&#128269;</div>
+                                <div>
+                                    <div class="feature-title">Deep Research</div>
+                                    <div class="feature-desc">Agents browse the web, cross-reference sources, extract real data</div>
+                                </div>
+                            </div>
+                            <div class="hero-feature">
+                                <div class="feature-icon">&#9997;&#65039;</div>
+                                <div>
+                                    <div class="feature-title">Structured Writing</div>
+                                    <div class="feature-desc">Executive summary, analysis, conclusions — not just a wall of text</div>
+                                </div>
+                            </div>
+                            <div class="hero-feature">
+                                <div class="feature-icon">&#128196;</div>
+                                <div>
+                                    <div class="feature-title">PDF Delivery</div>
+                                    <div class="feature-desc">Formatted, paginated, ready to share or present</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <svg class="hero-illustration" viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="60" y="220" width="280" height="8" rx="4" fill="rgba(102,126,234,0.15)"/>
+                        <rect x="90" y="228" width="8" height="50" rx="2" fill="rgba(102,126,234,0.1)"/>
+                        <rect x="302" y="228" width="8" height="50" rx="2" fill="rgba(102,126,234,0.1)"/>
+                        <rect x="120" y="120" width="160" height="100" rx="8" fill="rgba(20,20,50,0.6)" stroke="rgba(102,126,234,0.3)" stroke-width="1.5"/>
+                        <rect x="130" y="130" width="140" height="70" rx="4" fill="rgba(102,126,234,0.08)"/>
+                        <rect x="140" y="142" width="60" height="4" rx="2" fill="rgba(102,126,234,0.4)"/>
+                        <rect x="140" y="152" width="90" height="4" rx="2" fill="rgba(139,92,246,0.3)"/>
+                        <rect x="140" y="162" width="45" height="4" rx="2" fill="rgba(102,126,234,0.25)"/>
+                        <rect x="140" y="172" width="75" height="4" rx="2" fill="rgba(139,92,246,0.2)"/>
+                        <rect x="140" y="182" width="55" height="4" rx="2" fill="rgba(102,126,234,0.3)"/>
+                        <rect x="190" y="220" width="20" height="12" rx="2" fill="rgba(102,126,234,0.12)"/>
+                        <g class="float-doc-1">
+                            <rect x="310" y="100" width="55" height="70" rx="6" fill="rgba(255,255,255,0.07)" stroke="rgba(102,126,234,0.2)" stroke-width="1"/>
+                            <rect x="318" y="112" width="30" height="3" rx="1.5" fill="rgba(102,126,234,0.35)"/>
+                            <rect x="318" y="120" width="38" height="2.5" rx="1" fill="rgba(255,255,255,0.12)"/>
+                            <rect x="318" y="127" width="25" height="2.5" rx="1" fill="rgba(255,255,255,0.08)"/>
+                            <rect x="318" y="134" width="35" height="2.5" rx="1" fill="rgba(255,255,255,0.1)"/>
+                            <rect x="318" y="141" width="20" height="2.5" rx="1" fill="rgba(102,126,234,0.2)"/>
+                            <rect x="318" y="152" width="32" height="3" rx="1.5" fill="rgba(139,92,246,0.3)"/>
+                        </g>
+                        <g class="float-doc-2">
+                            <rect x="30" y="80" width="50" height="65" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(139,92,246,0.2)" stroke-width="1"/>
+                            <rect x="38" y="92" width="25" height="3" rx="1.5" fill="rgba(139,92,246,0.3)"/>
+                            <rect x="38" y="100" width="32" height="2" rx="1" fill="rgba(255,255,255,0.1)"/>
+                            <rect x="38" y="106" width="20" height="2" rx="1" fill="rgba(255,255,255,0.07)"/>
+                            <rect x="38" y="112" width="28" height="2" rx="1" fill="rgba(255,255,255,0.08)"/>
+                            <rect x="38" y="124" width="22" height="8" rx="2" fill="rgba(139,92,246,0.15)"/>
+                        </g>
+                        <g class="float-chart">
+                            <rect x="340" y="200" width="45" height="40" rx="5" fill="rgba(255,255,255,0.05)" stroke="rgba(102,126,234,0.15)" stroke-width="1"/>
+                            <rect x="347" y="220" width="5" height="14" rx="1" fill="rgba(102,126,234,0.3)"/>
+                            <rect x="355" y="214" width="5" height="20" rx="1" fill="rgba(139,92,246,0.3)"/>
+                            <rect x="363" y="210" width="5" height="24" rx="1" fill="rgba(102,126,234,0.4)"/>
+                        </g>
+                        <circle cx="100" cy="60" r="2" fill="rgba(102,126,234,0.5)">
+                            <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="350" cy="70" r="1.5" fill="rgba(139,92,246,0.5)">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="250" cy="50" r="1.8" fill="rgba(102,126,234,0.4)">
+                            <animate attributeName="opacity" values="0.2;0.7;0.2" dur="4s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="180" cy="90" r="1.2" fill="rgba(192,132,252,0.5)">
+                            <animate attributeName="opacity" values="0.4;0.9;0.4" dur="3.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
                 </div>
-                <!-- Sign-up content (hidden) -->
-                <div class="hero-text" id="hero-text-signup" style="display:none">
-                    <h1 class="hero-title">Start Building<br><span class="highlight">Your Reports.</span></h1>
-                    <p class="hero-subtitle">Create a free account to track your reports, unlock longer documents, and generate up to 3 reports per day.</p>
-                </div>
-                <div class="hero-features" id="hero-features-signin">
-                    <div class="hero-feature">
-                        <div class="feature-icon">&#128269;</div>
-                        <div>
-                            <div class="feature-title">Deep Research</div>
-                            <div class="feature-desc">Agents browse the web, cross-reference sources, extract real data</div>
-                        </div>
-                    </div>
-                    <div class="hero-feature">
-                        <div class="feature-icon">&#9997;&#65039;</div>
-                        <div>
-                            <div class="feature-title">Structured Writing</div>
-                            <div class="feature-desc">Executive summary, analysis, conclusions — not just a wall of text</div>
-                        </div>
-                    </div>
-                    <div class="hero-feature">
-                        <div class="feature-icon">&#128196;</div>
-                        <div>
-                            <div class="feature-title">PDF Delivery</div>
-                            <div class="feature-desc">Formatted, paginated, ready to share or present</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="hero-features" id="hero-features-signup" style="display:none">
-                    <div class="hero-feature">
-                        <div class="feature-icon">&#128200;</div>
-                        <div>
-                            <div class="feature-title">Track Progress</div>
-                            <div class="feature-desc">Your report history, saved and organized</div>
-                        </div>
-                    </div>
-                    <div class="hero-feature">
-                        <div class="feature-icon">&#128197;</div>
-                        <div>
-                            <div class="feature-title">3 Reports / Day</div>
-                            <div class="feature-desc">Free tier with up to 10-page reports</div>
-                        </div>
-                    </div>
-                    <div class="hero-feature">
-                        <div class="feature-icon">&#11088;</div>
-                        <div>
-                            <div class="feature-title">Upgrade Anytime</div>
-                            <div class="feature-desc">Go Pro for unlimited reports and 50 pages</div>
-                        </div>
+                <div class="hero-right">
+                    <div class="auth-card hero-card">
+                        <button class="btn-try-free" onclick="handleTryFree()">Try for Free</button>
+                        <p class="try-free-note">No account needed — 1 free report, 2 pages</p>
+                        <div class="divider">or</div>
+                        <button class="btn-google" onclick="handleGoogleSignIn()">
+                            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                            Sign in with Google
+                        </button>
+                        <form id="signin-form" onsubmit="handleSignIn(event)">
+                            <input type="email" id="signin-email" placeholder="Email address" required />
+                            <input type="password" id="signin-password" placeholder="Password" required />
+                            <button type="submit" class="btn-primary" id="signin-btn">Sign In</button>
+                        </form>
+                        <button class="btn-secondary" onclick="handleMagicLink()">Send Magic Link</button>
+                        <div class="auth-error" id="signin-error"></div>
+                        <div class="auth-link">Don't have an account? <a href="#signup">Sign up</a></div>
                     </div>
                 </div>
             </div>
-            <svg class="hero-illustration" viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect x="60" y="220" width="280" height="8" rx="4" fill="rgba(102,126,234,0.15)"/>
-                <rect x="90" y="228" width="8" height="50" rx="2" fill="rgba(102,126,234,0.1)"/>
-                <rect x="302" y="228" width="8" height="50" rx="2" fill="rgba(102,126,234,0.1)"/>
-                <rect x="120" y="120" width="160" height="100" rx="8" fill="rgba(20,20,50,0.6)" stroke="rgba(102,126,234,0.3)" stroke-width="1.5"/>
-                <rect x="130" y="130" width="140" height="70" rx="4" fill="rgba(102,126,234,0.08)"/>
-                <rect x="140" y="142" width="60" height="4" rx="2" fill="rgba(102,126,234,0.4)"/>
-                <rect x="140" y="152" width="90" height="4" rx="2" fill="rgba(139,92,246,0.3)"/>
-                <rect x="140" y="162" width="45" height="4" rx="2" fill="rgba(102,126,234,0.25)"/>
-                <rect x="140" y="172" width="75" height="4" rx="2" fill="rgba(139,92,246,0.2)"/>
-                <rect x="140" y="182" width="55" height="4" rx="2" fill="rgba(102,126,234,0.3)"/>
-                <rect x="190" y="220" width="20" height="12" rx="2" fill="rgba(102,126,234,0.12)"/>
-                <g class="float-doc-1">
-                    <rect x="310" y="100" width="55" height="70" rx="6" fill="rgba(255,255,255,0.07)" stroke="rgba(102,126,234,0.2)" stroke-width="1"/>
-                    <rect x="318" y="112" width="30" height="3" rx="1.5" fill="rgba(102,126,234,0.35)"/>
-                    <rect x="318" y="120" width="38" height="2.5" rx="1" fill="rgba(255,255,255,0.12)"/>
-                    <rect x="318" y="127" width="25" height="2.5" rx="1" fill="rgba(255,255,255,0.08)"/>
-                    <rect x="318" y="134" width="35" height="2.5" rx="1" fill="rgba(255,255,255,0.1)"/>
-                    <rect x="318" y="141" width="20" height="2.5" rx="1" fill="rgba(102,126,234,0.2)"/>
-                    <rect x="318" y="152" width="32" height="3" rx="1.5" fill="rgba(139,92,246,0.3)"/>
-                </g>
-                <g class="float-doc-2">
-                    <rect x="30" y="80" width="50" height="65" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(139,92,246,0.2)" stroke-width="1"/>
-                    <rect x="38" y="92" width="25" height="3" rx="1.5" fill="rgba(139,92,246,0.3)"/>
-                    <rect x="38" y="100" width="32" height="2" rx="1" fill="rgba(255,255,255,0.1)"/>
-                    <rect x="38" y="106" width="20" height="2" rx="1" fill="rgba(255,255,255,0.07)"/>
-                    <rect x="38" y="112" width="28" height="2" rx="1" fill="rgba(255,255,255,0.08)"/>
-                    <rect x="38" y="124" width="22" height="8" rx="2" fill="rgba(139,92,246,0.15)"/>
-                </g>
-                <g class="float-chart">
-                    <rect x="340" y="200" width="45" height="40" rx="5" fill="rgba(255,255,255,0.05)" stroke="rgba(102,126,234,0.15)" stroke-width="1"/>
-                    <rect x="347" y="220" width="5" height="14" rx="1" fill="rgba(102,126,234,0.3)"/>
-                    <rect x="355" y="214" width="5" height="20" rx="1" fill="rgba(139,92,246,0.3)"/>
-                    <rect x="363" y="210" width="5" height="24" rx="1" fill="rgba(102,126,234,0.4)"/>
-                </g>
-                <circle cx="100" cy="60" r="2" fill="rgba(102,126,234,0.5)">
-                    <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="350" cy="70" r="1.5" fill="rgba(139,92,246,0.5)">
-                    <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="250" cy="50" r="1.8" fill="rgba(102,126,234,0.4)">
-                    <animate attributeName="opacity" values="0.2;0.7;0.2" dur="4s" repeatCount="indefinite"/>
-                </circle>
-                <circle cx="180" cy="90" r="1.2" fill="rgba(192,132,252,0.5)">
-                    <animate attributeName="opacity" values="0.4;0.9;0.4" dur="3.5s" repeatCount="indefinite"/>
-                </circle>
-            </svg>
-        </div>
-        <div class="hero-right">
-            <div class="auth-card-slider">
-                <!-- Sign-in card -->
-                <div class="auth-card hero-card card-slide card-active" id="card-signin">
-                    <button class="btn-try-free" onclick="handleTryFree()">Try for Free</button>
-                    <p class="try-free-note">No account needed — 1 free report, 2 pages</p>
-                    <div class="divider">or</div>
-                    <button class="btn-google" onclick="handleGoogleSignIn()">
-                        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                        Sign in with Google
-                    </button>
-                    <form id="signin-form" onsubmit="handleSignIn(event)">
-                        <input type="email" id="signin-email" placeholder="Email address" required />
-                        <input type="password" id="signin-password" placeholder="Password" required />
-                        <button type="submit" class="btn-primary" id="signin-btn">Sign In</button>
-                    </form>
-                    <button class="btn-secondary" onclick="handleMagicLink()">Send Magic Link</button>
-                    <div class="auth-error" id="signin-error"></div>
-                    <div class="auth-link">Don't have an account? <a href="#signup">Sign up</a></div>
+
+            <!-- ===== SIGN UP PAGE ===== -->
+            <div class="auth-panel">
+                <div class="hero-left">
+                    <div class="hero-grid"></div>
+                    <div class="hero-accent"></div>
+                    <div class="hero-content">
+                        <div class="hero-logo">GenRep</div>
+                        <h1 class="hero-title">Start Building<br><span class="highlight">Your Reports.</span></h1>
+                        <p class="hero-subtitle">Create a free account to track your reports, unlock longer documents, and generate up to 3 reports per day.</p>
+                        <div class="hero-features">
+                            <div class="hero-feature">
+                                <div class="feature-icon">&#128200;</div>
+                                <div>
+                                    <div class="feature-title">Track Progress</div>
+                                    <div class="feature-desc">Your report history, saved and organized</div>
+                                </div>
+                            </div>
+                            <div class="hero-feature">
+                                <div class="feature-icon">&#128197;</div>
+                                <div>
+                                    <div class="feature-title">3 Reports / Day</div>
+                                    <div class="feature-desc">Free tier with up to 10-page reports</div>
+                                </div>
+                            </div>
+                            <div class="hero-feature">
+                                <div class="feature-icon">&#11088;</div>
+                                <div>
+                                    <div class="feature-title">Upgrade Anytime</div>
+                                    <div class="feature-desc">Go Pro for unlimited reports and 50 pages</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <svg class="hero-illustration" viewBox="0 0 400 320" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <rect x="60" y="220" width="280" height="8" rx="4" fill="rgba(102,126,234,0.15)"/>
+                        <rect x="90" y="228" width="8" height="50" rx="2" fill="rgba(102,126,234,0.1)"/>
+                        <rect x="302" y="228" width="8" height="50" rx="2" fill="rgba(102,126,234,0.1)"/>
+                        <rect x="120" y="120" width="160" height="100" rx="8" fill="rgba(20,20,50,0.6)" stroke="rgba(102,126,234,0.3)" stroke-width="1.5"/>
+                        <rect x="130" y="130" width="140" height="70" rx="4" fill="rgba(102,126,234,0.08)"/>
+                        <rect x="140" y="142" width="60" height="4" rx="2" fill="rgba(102,126,234,0.4)"/>
+                        <rect x="140" y="152" width="90" height="4" rx="2" fill="rgba(139,92,246,0.3)"/>
+                        <rect x="140" y="162" width="45" height="4" rx="2" fill="rgba(102,126,234,0.25)"/>
+                        <rect x="140" y="172" width="75" height="4" rx="2" fill="rgba(139,92,246,0.2)"/>
+                        <rect x="140" y="182" width="55" height="4" rx="2" fill="rgba(102,126,234,0.3)"/>
+                        <rect x="190" y="220" width="20" height="12" rx="2" fill="rgba(102,126,234,0.12)"/>
+                        <g class="float-doc-1">
+                            <rect x="310" y="100" width="55" height="70" rx="6" fill="rgba(255,255,255,0.07)" stroke="rgba(102,126,234,0.2)" stroke-width="1"/>
+                            <rect x="318" y="112" width="30" height="3" rx="1.5" fill="rgba(102,126,234,0.35)"/>
+                            <rect x="318" y="120" width="38" height="2.5" rx="1" fill="rgba(255,255,255,0.12)"/>
+                            <rect x="318" y="127" width="25" height="2.5" rx="1" fill="rgba(255,255,255,0.08)"/>
+                            <rect x="318" y="134" width="35" height="2.5" rx="1" fill="rgba(255,255,255,0.1)"/>
+                            <rect x="318" y="141" width="20" height="2.5" rx="1" fill="rgba(102,126,234,0.2)"/>
+                            <rect x="318" y="152" width="32" height="3" rx="1.5" fill="rgba(139,92,246,0.3)"/>
+                        </g>
+                        <g class="float-doc-2">
+                            <rect x="30" y="80" width="50" height="65" rx="6" fill="rgba(255,255,255,0.05)" stroke="rgba(139,92,246,0.2)" stroke-width="1"/>
+                            <rect x="38" y="92" width="25" height="3" rx="1.5" fill="rgba(139,92,246,0.3)"/>
+                            <rect x="38" y="100" width="32" height="2" rx="1" fill="rgba(255,255,255,0.1)"/>
+                            <rect x="38" y="106" width="20" height="2" rx="1" fill="rgba(255,255,255,0.07)"/>
+                            <rect x="38" y="112" width="28" height="2" rx="1" fill="rgba(255,255,255,0.08)"/>
+                            <rect x="38" y="124" width="22" height="8" rx="2" fill="rgba(139,92,246,0.15)"/>
+                        </g>
+                        <g class="float-chart">
+                            <rect x="340" y="200" width="45" height="40" rx="5" fill="rgba(255,255,255,0.05)" stroke="rgba(102,126,234,0.15)" stroke-width="1"/>
+                            <rect x="347" y="220" width="5" height="14" rx="1" fill="rgba(102,126,234,0.3)"/>
+                            <rect x="355" y="214" width="5" height="20" rx="1" fill="rgba(139,92,246,0.3)"/>
+                            <rect x="363" y="210" width="5" height="24" rx="1" fill="rgba(102,126,234,0.4)"/>
+                        </g>
+                        <circle cx="100" cy="60" r="2" fill="rgba(102,126,234,0.5)">
+                            <animate attributeName="opacity" values="0.3;0.8;0.3" dur="3s" repeatCount="indefinite"/>
+                        </circle>
+                        <circle cx="350" cy="70" r="1.5" fill="rgba(139,92,246,0.5)">
+                            <animate attributeName="opacity" values="0.5;1;0.5" dur="2.5s" repeatCount="indefinite"/>
+                        </circle>
+                    </svg>
                 </div>
-                <!-- Sign-up card -->
-                <div class="auth-card hero-card card-slide card-right" id="card-signup">
-                    <h2>Create Account</h2>
-                    <p class="subtitle">Start generating reports with GenRep</p>
-                    <button class="btn-try-free" onclick="handleTryFree()">Try for Free</button>
-                    <p class="try-free-note">No account needed — 1 free report, 2 pages</p>
-                    <div class="divider">or sign up</div>
-                    <form id="signup-form" onsubmit="handleSignUp(event)">
-                        <input type="email" id="signup-email" placeholder="Email address" required />
-                        <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6" />
-                        <button type="submit" class="btn-primary" id="signup-btn">Create Account</button>
-                    </form>
-                    <button class="btn-google" onclick="handleGoogleSignIn()">
-                        <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
-                        Sign up with Google
-                    </button>
-                    <div class="auth-error" id="signup-error"></div>
-                    <div class="auth-link">Already have an account? <a href="#signin">Sign in</a></div>
+                <div class="hero-right">
+                    <div class="auth-card hero-card">
+                        <h2>Create Account</h2>
+                        <p class="subtitle">Start generating reports with GenRep</p>
+                        <button class="btn-try-free" onclick="handleTryFree()">Try for Free</button>
+                        <p class="try-free-note">No account needed — 1 free report, 2 pages</p>
+                        <div class="divider">or sign up</div>
+                        <form id="signup-form" onsubmit="handleSignUp(event)">
+                            <input type="email" id="signup-email" placeholder="Email address" required />
+                            <input type="password" id="signup-password" placeholder="Password (min 6 chars)" required minlength="6" />
+                            <button type="submit" class="btn-primary" id="signup-btn">Create Account</button>
+                        </form>
+                        <button class="btn-google" onclick="handleGoogleSignIn()">
+                            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92a5.06 5.06 0 0 1-2.2 3.32v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.1z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/><path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/></svg>
+                            Sign up with Google
+                        </button>
+                        <div class="auth-error" id="signup-error"></div>
+                        <div class="auth-link">Already have an account? <a href="#signin">Sign in</a></div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -1725,29 +1758,22 @@
             const handler = routes[hash] || renderSignin;
             currentHash = hash;
 
-            const wrapper = document.getElementById('auth-slider-wrapper');
+            const slider = document.getElementById('auth-slider');
             const sidebar = document.getElementById('sidebar');
             const isAuthPage = (hash === '' || hash === 'signin' || hash === 'signup');
 
-            // Hide sidebar on landing/auth pages
             if (isAuthPage || hash === 'pricing') {
                 sidebar.style.display = 'none';
             } else {
                 sidebar.style.display = '';
             }
 
-            // Hide all non-auth pages
-            document.querySelectorAll('.main').forEach(el => {
-                if (el.id !== 'page-signin' && el.id !== 'page-signup') {
-                    el.style.display = 'none';
-                }
-            });
+            document.querySelectorAll('.main').forEach(el => el.style.display = 'none');
 
-            // Show wrapper for auth pages
             if (isAuthPage) {
-                wrapper.style.display = 'flex';
+                slider.style.display = 'block';
             } else {
-                wrapper.style.display = 'none';
+                slider.style.display = 'none';
             }
 
             handler();
@@ -1763,45 +1789,19 @@
         }
 
         function renderSignin() {
-            const wrapper = document.getElementById('auth-slider-wrapper');
-            wrapper.style.display = 'flex';
-            const cardSignin = document.getElementById('card-signin');
-            const cardSignup = document.getElementById('card-signup');
-            const heroTextSignin = document.getElementById('hero-text-signin');
-            const heroTextSignup = document.getElementById('hero-text-signup');
-            const heroFeatSignin = document.getElementById('hero-features-signin');
-            const heroFeatSignup = document.getElementById('hero-features-signup');
-            // Crossfade left side
-            heroTextSignin.style.display = '';
-            heroTextSignup.style.display = 'none';
-            heroFeatSignin.style.display = '';
-            heroFeatSignup.style.display = 'none';
-            // Slide cards
-            cardSignin.classList.remove('card-left', 'card-right');
-            cardSignin.classList.add('card-active');
-            cardSignup.classList.remove('card-active');
-            cardSignup.classList.add('card-right');
+            const slider = document.getElementById('auth-slider');
+            slider.style.display = 'block';
+            const track = document.getElementById('auth-track');
+            track.classList.remove('slide-to-signup');
+            track.classList.add('slide-to-signin');
         }
 
         function renderSignup() {
-            const wrapper = document.getElementById('auth-slider-wrapper');
-            wrapper.style.display = 'flex';
-            const cardSignin = document.getElementById('card-signin');
-            const cardSignup = document.getElementById('card-signup');
-            const heroTextSignin = document.getElementById('hero-text-signin');
-            const heroTextSignup = document.getElementById('hero-text-signup');
-            const heroFeatSignin = document.getElementById('hero-features-signin');
-            const heroFeatSignup = document.getElementById('hero-features-signup');
-            // Crossfade left side
-            heroTextSignin.style.display = 'none';
-            heroTextSignup.style.display = '';
-            heroFeatSignin.style.display = 'none';
-            heroFeatSignup.style.display = '';
-            // Slide cards
-            cardSignup.classList.remove('card-left', 'card-right');
-            cardSignup.classList.add('card-active');
-            cardSignin.classList.remove('card-active');
-            cardSignin.classList.add('card-left');
+            const slider = document.getElementById('auth-slider');
+            slider.style.display = 'block';
+            const track = document.getElementById('auth-track');
+            track.classList.remove('slide-to-signin');
+            track.classList.add('slide-to-signup');
         }
 
         function renderPricing() {
