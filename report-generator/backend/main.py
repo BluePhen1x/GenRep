@@ -106,9 +106,13 @@ async def root():
 @app.get("/health")
 async def health():
     """Health check."""
+    try:
+        om_status = wrapper.get_status()
+    except Exception:  # noqa: BLE001
+        om_status = {"status": "not_configured", "message": "OpenManus not configured"}
     return {
         "status": "ok",
-        "openmanus": wrapper.get_status(),
+        "openmanus": om_status,
         "config": {
             "temp_dir": str(config.TEMP_DIR),
             "redis_url": config.REDIS_URL,
@@ -120,7 +124,10 @@ async def health():
 @app.get("/openmanus-status")
 async def openmanus_status():
     """Get detailed GenRep status."""
-    return wrapper.get_status()
+    try:
+        return wrapper.get_status()
+    except Exception as e:  # noqa: BLE001
+        return {"status": "not_configured", "message": str(e)}
 
 
 @app.get("/api/config")
