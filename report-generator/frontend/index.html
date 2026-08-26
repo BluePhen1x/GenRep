@@ -843,7 +843,7 @@
 
         .auth-card .btn-primary {
             width: 100%;
-            padding: 12px;
+            padding: 13px;
             border: none;
             border-radius: 12px;
             font-size: 0.95rem;
@@ -851,31 +851,36 @@
             background: #1d1d1f;
             color: #ffffff;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             font-family: inherit;
             margin-bottom: 8px;
         }
 
         .auth-card .btn-primary:hover {
             background: #000000;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         .auth-card .btn-secondary {
             width: 100%;
             padding: 12px;
-            border: 1px solid #e5e5ea;
+            border: 1px solid rgba(0,0,0,0.08);
             border-radius: 12px;
             font-size: 0.9rem;
             font-weight: 500;
             background: #ffffff;
             color: #1d1d1f;
             cursor: pointer;
-            transition: all 0.2s;
+            transition: all 0.25s ease;
             font-family: inherit;
         }
 
         .auth-card .btn-secondary:hover {
-            background: #f5f5f7;
+            background: #fafafa;
+            border-color: rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
         }
 
         .auth-card .btn-google {
